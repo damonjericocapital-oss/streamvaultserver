@@ -54,4 +54,5 @@ export type ViewType =
   | 'search'
   | 'settings'
   | 'files'
-  | 'ai';
+  | 'ai'
+  | 'deploy';

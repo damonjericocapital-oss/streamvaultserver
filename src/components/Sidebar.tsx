@@ -16,6 +16,7 @@ import {
   Sparkles,
   Clock,
   Heart,
+  Rocket,
 } from 'lucide-react';
 import { ViewType } from '../types';
 
@@ -41,6 +42,7 @@ const libraryNavItems: { id: ViewType; label: string; icon: React.ElementType }[
 const systemNavItems: { id: ViewType; label: string; icon: React.ElementType }[] = [
   { id: 'ai', label: 'NEXUS AI', icon: Brain },
   { id: 'torrents', label: 'Downloads', icon: Download },
+  { id: 'deploy', label: 'Publish Server', icon: Rocket },
   { id: 'search', label: 'Search', icon: Search },
   { id: 'files', label: 'Files', icon: FolderOpen },
   { id: 'settings', label: 'Settings', icon: Settings },

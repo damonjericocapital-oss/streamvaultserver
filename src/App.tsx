@@ -15,6 +15,7 @@ import AIFloatingButton from './components/AIFloatingButton';
 import AIPanel from './components/AIPanel';
 import MediaHome from './components/MediaHome';
 import MediaDetail from './components/MediaDetail';
+import DeployGuide from './components/DeployGuide';
 import { ViewType, Torrent } from './types';
 import { AIAction, AIInsight } from './types/ai';
 import { MediaItem } from './data/mediaLibrary';
@@ -116,6 +117,8 @@ function App() {
         return <FileBrowser torrents={torrents} />;
       case 'settings':
         return <SettingsView />;
+      case 'deploy':
+        return <DeployGuide />;
       default:
         return <MediaHome onPlay={handleMediaPlay} onDetail={handleMediaDetail} />;
     }
