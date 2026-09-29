@@ -16,6 +16,9 @@ import AIPanel from './components/AIPanel';
 import MediaHome from './components/MediaHome';
 import MediaDetail from './components/MediaDetail';
 import DeployGuide from './components/DeployGuide';
+import LoginScreen from './components/LoginScreen';
+import UserMenu from './components/UserMenu';
+import { UserProvider, useUser } from './context/UserContext';
 import { ViewType, Torrent } from './types';
 import { AIAction, AIInsight } from './types/ai';
 import { MediaItem } from './data/mediaLibrary';
@@ -23,6 +26,15 @@ import { mockTorrents, mockStats } from './data/mockData';
 import { generateAutoInsights } from './engine/aiEngine';
 
 function App() {
+  return (
+    <UserProvider>
+      <AppContent />
+    </UserProvider>
+  );
+}
+
+function AppContent() {
+  const { isAuthenticated, addToWatchHistory, currentUser } = useUser();
   const [currentView, setCurrentView] = useState<ViewType>('home');
   const [torrents, setTorrents] = useState<Torrent[]>(mockTorrents);
   const [streamingTorrent, setStreamingTorrent] = useState<Torrent | null>(null);
@@ -74,6 +86,14 @@ function App() {
     const torrent = torrents.find((t) => t.id === item.torrentId);
     if (torrent) {
       setStreamingTorrent(torrent);
+      // Track watch history for current user
+      addToWatchHistory({
+        mediaId: item.id,
+        watchedAt: new Date().toISOString(),
+        progress: item.progress || 0,
+        completed: (item.progress || 0) >= 100,
+        duration: 0,
+      });
     }
   };
 
@@ -124,6 +144,11 @@ function App() {
     }
   };
 
+  // Show login screen if not authenticated
+  if (!isAuthenticated) {
+    return <LoginScreen />;
+  }
+
   return (
     <div className="min-h-screen bg-gray-950 text-white">
       {/* Background Effects */}
@@ -168,13 +193,8 @@ function App() {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              {/* User Avatar */}
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gray-800/30 border border-gray-700/30">
-                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
-                  <span className="text-[10px] font-bold text-white">SV</span>
-                </div>
-                <span className="text-xs text-gray-300">Admin</span>
-              </div>
+              {/* User Menu */}
+              <UserMenu onOpenSettings={() => setCurrentView('settings')} />
 
               {/* Add Content Button */}
               <motion.button

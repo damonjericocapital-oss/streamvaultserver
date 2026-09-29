@@ -1,8 +1,9 @@
 import { motion } from 'framer-motion';
-import { Sparkles, Play, Clock, TrendingUp, Star, Film, Tv, Music, Sparkle } from 'lucide-react';
+import { Sparkles, Play, Clock, TrendingUp, Star, Film, Tv, Music, Sparkle, Heart } from 'lucide-react';
 import HeroBanner from './HeroBanner';
 import ContentRow from './ContentRow';
-import { MediaItem } from '../data/mediaLibrary';
+import { MediaItem, mediaLibrary } from '../data/mediaLibrary';
+import { useUser } from '../context/UserContext';
 import {
   getContinueWatching,
   getRecentlyAdded,
@@ -20,8 +21,37 @@ interface MediaHomeProps {
 }
 
 export default function MediaHome({ onPlay, onDetail }: MediaHomeProps) {
+  const { currentUser } = useUser();
   const featured = getFeatured();
-  const continueWatching = getContinueWatching();
+
+  // Personalized continue watching based on user's watch history
+  const continueWatching: MediaItem[] = (() => {
+    if (!currentUser || currentUser.watchHistory.length === 0) {
+      return getContinueWatching();
+    }
+    // Merge user watch history with media data
+    const fromHistory: MediaItem[] = currentUser.watchHistory
+      .filter((h) => h.progress > 0 && h.progress < 100)
+      .map((h): MediaItem | null => {
+        const media = mediaLibrary.find((m) => m.id === h.mediaId);
+        if (!media) return null;
+        return { ...media, progress: h.progress, lastWatched: h.watchedAt } as MediaItem;
+      })
+      .filter((m): m is MediaItem => m !== null);
+    
+    const remaining = getContinueWatching()
+      .filter((m) => !currentUser.watchHistory.some((h) => h.mediaId === m.id));
+    
+    return [...fromHistory, ...remaining].slice(0, 10);
+  })();
+
+  // User's watchlist
+  const watchlist = currentUser
+    ? currentUser.watchlist
+        .map((id) => mediaLibrary.find((m) => m.id === id))
+        .filter((m): m is MediaItem => m !== null)
+    : [];
+
   const aiRecommended = getAIRecommended();
   const recentlyAdded = getRecentlyAdded();
   const topRated = getTopRated();
@@ -39,7 +69,7 @@ export default function MediaHome({ onPlay, onDetail }: MediaHomeProps) {
         {/* Continue Watching - Priority row */}
         {continueWatching.length > 0 && (
           <ContentRow
-            title="Continue Watching"
+            title={`Continue Watching for ${currentUser?.username || 'You'}`}
             items={continueWatching}
             onPlay={onPlay}
             onDetail={onDetail}
@@ -48,9 +78,20 @@ export default function MediaHome({ onPlay, onDetail }: MediaHomeProps) {
           />
         )}
 
+        {/* User's Watchlist */}
+        {watchlist.length > 0 && (
+          <ContentRow
+            title="My Watchlist"
+            items={watchlist}
+            onPlay={onPlay}
+            onDetail={onDetail}
+            icon={<Heart className="w-4 h-4" />}
+          />
+        )}
+
         {/* AI Recommendations */}
         <ContentRow
-          title="Recommended for You"
+          title={`${currentUser?.username || 'Your'} Recommendations`}
           items={aiRecommended}
           onPlay={onPlay}
           onDetail={onDetail}

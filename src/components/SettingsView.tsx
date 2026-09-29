@@ -10,10 +10,15 @@ import {
   Palette,
   Save,
   RotateCcw,
+  Users,
+  Trash2,
+  Edit3,
 } from 'lucide-react';
 import { useState } from 'react';
+import { useUser } from '../context/UserContext';
 
 export default function SettingsView() {
+  const { currentUser, users, deleteUser, updatePreferences } = useUser();
   const [settings, setSettings] = useState({
     downloadPath: '/downloads/torrents',
     maxDownloadSpeed: 0,
@@ -55,6 +60,71 @@ export default function SettingsView() {
           </button>
         </div>
       </div>
+
+      {/* Profiles Management (Admin only) */}
+      {currentUser?.role === 'admin' && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700/50 overflow-hidden"
+        >
+          <div className="p-5 border-b border-gray-700/50">
+            <div className="flex items-center gap-2">
+              <Users className="w-5 h-5 text-amber-400" />
+              <h3 className="text-lg font-semibold text-white">User Profiles</h3>
+              <span className="text-xs text-gray-500 ml-2">{users.length} profile{users.length > 1 ? 's' : ''}</span>
+            </div>
+            <p className="text-xs text-gray-500 mt-1">Manage who has access to your server</p>
+          </div>
+          <div className="divide-y divide-gray-700/30">
+            {users.map((user) => (
+              <div key={user.id} className="flex items-center justify-between p-4 hover:bg-gray-700/20 transition-colors">
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold text-white"
+                    style={{
+                      background: `linear-gradient(135deg, ${user.avatar.colors[0]}, ${user.avatar.colors[1]})`,
+                    }}
+                  >
+                    {user.username.charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-white flex items-center gap-2">
+                      {user.username}
+                      {user.id === currentUser.id && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400">You</span>
+                      )}
+                    </p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-xs text-gray-500 capitalize">{user.role}</span>
+                      <span className="text-gray-700">•</span>
+                      <span className="text-xs text-gray-500">{user.watchHistory.length} watched</span>
+                      {user.pin && (
+                        <>
+                          <span className="text-gray-700">•</span>
+                          <span className="text-xs text-gray-500">PIN protected</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                {user.id !== currentUser.id && (
+                  <button
+                    onClick={() => {
+                      if (confirm(`Delete profile "${user.username}"?`)) {
+                        deleteUser(user.id);
+                      }
+                    }}
+                    className="p-2 rounded-lg hover:bg-red-500/10 text-gray-400 hover:text-red-400 transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      )}
 
       {/* Connection Settings */}
       <SettingsSection icon={Globe} title="Connection" description="Network and connection settings">
