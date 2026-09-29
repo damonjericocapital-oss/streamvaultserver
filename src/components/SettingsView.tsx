@@ -201,6 +201,66 @@ export default function SettingsView() {
               window.dispatchEvent(event);
             }}
           />
+          <InfrastructureButton
+            icon="🔍"
+            title="Media Hunter"
+            description="Find local & cloud media"
+            color="blue"
+            onClick={() => {
+              const event = new CustomEvent('openInfrastructure', { detail: 'media-hunter' });
+              window.dispatchEvent(event);
+            }}
+          />
+          <InfrastructureButton
+            icon="📺"
+            title="DLNA Cast"
+            description="Stream to devices"
+            color="purple"
+            onClick={() => {
+              const event = new CustomEvent('openInfrastructure', { detail: 'dlna' });
+              window.dispatchEvent(event);
+            }}
+          />
+          <InfrastructureButton
+            icon="🧠"
+            title="AI Fix"
+            description="Auto-troubleshoot"
+            color="cyan"
+            onClick={() => {
+              const event = new CustomEvent('openInfrastructure', { detail: 'troubleshooter' });
+              window.dispatchEvent(event);
+            }}
+          />
+          <InfrastructureButton
+            icon="🔀"
+            title="Shuffle Play"
+            description="Random discovery"
+            color="pink"
+            onClick={() => {
+              const event = new CustomEvent('openInfrastructure', { detail: 'shuffle' });
+              window.dispatchEvent(event);
+            }}
+          />
+          <InfrastructureButton
+            icon="💰"
+            title="Paid Viewing"
+            description="Monetize content"
+            color="amber"
+            onClick={() => {
+              const event = new CustomEvent('openInfrastructure', { detail: 'paid' });
+              window.dispatchEvent(event);
+            }}
+          />
+          <InfrastructureButton
+            icon="⚡"
+            title="Anti-Buffer"
+            description="Smooth playback"
+            color="emerald"
+            onClick={() => {
+              const event = new CustomEvent('openInfrastructure', { detail: 'anti-buffering' });
+              window.dispatchEvent(event);
+            }}
+          />
         </div>
       </motion.div>
 
@@ -444,6 +504,9 @@ function InfrastructureButton({
     cyan: 'from-cyan-500/20 to-cyan-500/5 border-cyan-500/20 hover:border-cyan-500/40',
     red: 'from-red-500/20 to-red-500/5 border-red-500/20 hover:border-red-500/40',
     violet: 'from-violet-500/20 to-violet-500/5 border-violet-500/20 hover:border-violet-500/40',
+    purple: 'from-purple-500/20 to-purple-500/5 border-purple-500/20 hover:border-purple-500/40',
+    pink: 'from-pink-500/20 to-pink-500/5 border-pink-500/20 hover:border-pink-500/40',
+    amber: 'from-amber-500/20 to-amber-500/5 border-amber-500/20 hover:border-amber-500/40',
   };
 
   return (

@@ -47,6 +47,20 @@ import {
   SecurityConfig,
   VPNConfig,
 } from './types/infrastructure';
+import {
+  MediaHunterConfig,
+  DLNAConfig,
+  TroubleshooterConfig,
+  ShuffleConfig,
+  PaidContentConfig,
+  AntiBufferingConfig,
+} from './types/ecosystem';
+import MediaHunter from './components/MediaHunter';
+import DLNACasting from './components/DLNACasting';
+import AITroubleshooter from './components/AITroubleshooter';
+import ShufflePlayer from './components/ShufflePlayer';
+import PaidViewing from './components/PaidViewing';
+import AntiBufferingEngine from './components/AntiBufferingEngine';
 
 function App() {
   return (
@@ -179,6 +193,72 @@ function AppContent() {
     connected: false,
   });
 
+  // Ecosystem features state
+  const [showMediaHunter, setShowMediaHunter] = useState(false);
+  const [mediaHunterConfig, setMediaHunterConfig] = useState<MediaHunterConfig>({
+    localPaths: [],
+    cloudProviders: [],
+    autoScan: false,
+    scanInterval: 60,
+    fileTypes: ['mp4', 'mkv', 'avi', 'mov', 'mp3', 'flac'],
+    excludePatterns: ['*.tmp', '*.part'],
+    totalFiles: 0,
+  });
+
+  const [showDLNA, setShowDLNA] = useState(false);
+  const [dlnaConfig, setDlnaConfig] = useState<DLNAConfig>({
+    enabled: false,
+    serverName: 'StreamVault',
+    shareLibrary: true,
+    shareDownloads: false,
+    transcodeOnFly: true,
+    maxStreamingQuality: '1080p',
+    devices: [],
+  });
+
+  const [showTroubleshooter, setShowTroubleshooter] = useState(false);
+  const [troubleshooterConfig, setTroubleshooterConfig] = useState<TroubleshooterConfig>({
+    enabled: false,
+    autoFix: false,
+    monitorInterval: 30,
+    notifications: true,
+    issues: [],
+  });
+
+  const [showShuffle, setShowShuffle] = useState(false);
+  const [shuffleConfig, setShuffleConfig] = useState<ShuffleConfig>({
+    enabled: false,
+    mode: 'complete_random',
+    includeWatched: false,
+    minRating: 0,
+    genres: [],
+    moods: [],
+    history: [],
+  });
+
+  const [showPaidViewing, setShowPaidViewing] = useState(false);
+  const [paidContentConfig, setPaidContentConfig] = useState<PaidContentConfig>({
+    enabled: false,
+    currency: 'USD',
+    paymentMethods: ['Credit Card'],
+    priceTiers: [],
+    rentalPeriod: 48,
+    purchasePermanent: false,
+  });
+
+  const [showAntiBuffering, setShowAntiBuffering] = useState(false);
+  const [antiBufferingConfig, setAntiBufferingConfig] = useState<AntiBufferingConfig>({
+    enabled: true,
+    adaptiveBitrate: true,
+    prebufferSeconds: 5,
+    networkPrediction: true,
+    peerBoost: false,
+    cacheSize: 512,
+    prioritizeVideo: true,
+    flickerReduction: true,
+    frameSync: true,
+  });
+
   // Simulate progress updates
   useEffect(() => {
     const interval = setInterval(() => {
@@ -221,6 +301,24 @@ function AppContent() {
           break;
         case 'vpn':
           setShowVPN(true);
+          break;
+        case 'media-hunter':
+          setShowMediaHunter(true);
+          break;
+        case 'dlna':
+          setShowDLNA(true);
+          break;
+        case 'troubleshooter':
+          setShowTroubleshooter(true);
+          break;
+        case 'shuffle':
+          setShowShuffle(true);
+          break;
+        case 'paid':
+          setShowPaidViewing(true);
+          break;
+        case 'anti-buffering':
+          setShowAntiBuffering(true);
           break;
       }
     };
@@ -545,6 +643,73 @@ function AppContent() {
             config={vpnConfig}
             onConfigChange={setVpnConfig}
             onClose={() => setShowVPN(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Media Hunter */}
+      <AnimatePresence>
+        {showMediaHunter && (
+          <MediaHunter
+            config={mediaHunterConfig}
+            onConfigChange={setMediaHunterConfig}
+            onClose={() => setShowMediaHunter(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* DLNA Casting */}
+      <AnimatePresence>
+        {showDLNA && (
+          <DLNACasting
+            config={dlnaConfig}
+            onConfigChange={setDlnaConfig}
+            onClose={() => setShowDLNA(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* AI Troubleshooter */}
+      <AnimatePresence>
+        {showTroubleshooter && (
+          <AITroubleshooter
+            config={troubleshooterConfig}
+            onConfigChange={setTroubleshooterConfig}
+            onClose={() => setShowTroubleshooter(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Shuffle Player */}
+      <AnimatePresence>
+        {showShuffle && (
+          <ShufflePlayer
+            config={shuffleConfig}
+            onConfigChange={setShuffleConfig}
+            onPlay={handleMediaPlay}
+            onClose={() => setShowShuffle(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Paid Viewing */}
+      <AnimatePresence>
+        {showPaidViewing && (
+          <PaidViewing
+            config={paidContentConfig}
+            onConfigChange={setPaidContentConfig}
+            onClose={() => setShowPaidViewing(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Anti-Buffering Engine */}
+      <AnimatePresence>
+        {showAntiBuffering && (
+          <AntiBufferingEngine
+            config={antiBufferingConfig}
+            onConfigChange={setAntiBufferingConfig}
+            onClose={() => setShowAntiBuffering(false)}
           />
         )}
       </AnimatePresence>
