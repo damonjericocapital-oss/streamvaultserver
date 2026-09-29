@@ -18,12 +18,21 @@ import MediaDetail from './components/MediaDetail';
 import DeployGuide from './components/DeployGuide';
 import LoginScreen from './components/LoginScreen';
 import UserMenu from './components/UserMenu';
+import GroupTheater from './components/GroupTheater';
+import AgeVerification from './components/AgeVerification';
+import AdvancedPlayerSettings from './components/AdvancedPlayerSettings';
 import { UserProvider, useUser } from './context/UserContext';
 import { ViewType, Torrent } from './types';
 import { AIAction, AIInsight } from './types/ai';
 import { MediaItem } from './data/mediaLibrary';
 import { mockTorrents, mockStats } from './data/mockData';
 import { generateAutoInsights } from './engine/aiEngine';
+import {
+  TranslationConfig,
+  LatencyConfig,
+  DolbyConfig,
+  TheaterRoom,
+} from './types/advanced';
 
 function App() {
   return (
@@ -44,6 +53,41 @@ function AppContent() {
   const [autoPilot, setAutoPilot] = useState(false);
   const [aiInsights, setAiInsights] = useState<AIInsight[]>([]);
   const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
+
+  // Advanced features state
+  const [showGroupTheater, setShowGroupTheater] = useState(false);
+  const [theaterRoom, setTheaterRoom] = useState<TheaterRoom | null>(null);
+  const [showAgeVerification, setShowAgeVerification] = useState(false);
+  const [ageVerificationData, setAgeVerificationData] = useState<{
+    requiredAge: number;
+    contentTitle: string;
+    onVerify: () => void;
+  } | null>(null);
+  const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
+  const [translationConfig, setTranslationConfig] = useState<TranslationConfig>({
+    enabled: false,
+    sourceLanguage: 'auto',
+    targetLanguage: 'en',
+    autoDetect: true,
+    quality: 'high',
+    delay: 0,
+  });
+  const [latencyConfig, setLatencyConfig] = useState<LatencyConfig>({
+    targetLatency: 500,
+    bufferSize: 10,
+    adaptiveBitrate: true,
+    networkOptimization: 'balanced',
+    prebufferSeconds: 3,
+  });
+  const [dolbyConfig, setDolbyConfig] = useState<DolbyConfig>({
+    enabled: true,
+    atmos: false,
+    digitalPlus: true,
+    volumeLeveler: true,
+    dialogueEnhancer: 50,
+    bassEnhancement: 30,
+    virtualizer: false,
+  });
 
   // Simulate progress updates
   useEffect(() => {
@@ -272,6 +316,47 @@ function AppContent() {
             item={selectedMedia}
             onClose={() => setSelectedMedia(null)}
             onPlay={handleMediaPlay}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Group Theater */}
+      <AnimatePresence>
+        {showGroupTheater && theaterRoom && (
+          <GroupTheater room={theaterRoom} onClose={() => setShowGroupTheater(false)} />
+        )}
+      </AnimatePresence>
+
+      {/* Age Verification */}
+      <AnimatePresence>
+        {showAgeVerification && ageVerificationData && (
+          <AgeVerification
+            requiredAge={ageVerificationData.requiredAge}
+            contentTitle={ageVerificationData.contentTitle}
+            onVerify={(birthDate) => {
+              ageVerificationData.onVerify();
+              setShowAgeVerification(false);
+              setAgeVerificationData(null);
+            }}
+            onCancel={() => {
+              setShowAgeVerification(false);
+              setAgeVerificationData(null);
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Advanced Player Settings */}
+      <AnimatePresence>
+        {showAdvancedSettings && (
+          <AdvancedPlayerSettings
+            translation={translationConfig}
+            latency={latencyConfig}
+            dolby={dolbyConfig}
+            onTranslationChange={setTranslationConfig}
+            onLatencyChange={setLatencyConfig}
+            onDolbyChange={setDolbyConfig}
+            onClose={() => setShowAdvancedSettings(false)}
           />
         )}
       </AnimatePresence>
