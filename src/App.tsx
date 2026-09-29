@@ -10,8 +10,13 @@ import StreamingView from './components/StreamingView';
 import SearchView from './components/SearchView';
 import SettingsView from './components/SettingsView';
 import FileBrowser from './components/FileBrowser';
+import AIAgent from './components/AIAgent';
+import AIFloatingButton from './components/AIFloatingButton';
+import AIPanel from './components/AIPanel';
 import { ViewType, Torrent } from './types';
+import { AIAction, AIInsight } from './types/ai';
 import { mockTorrents, mockStats } from './data/mockData';
+import { generateAutoInsights } from './engine/aiEngine';
 
 function App() {
   const [currentView, setCurrentView] = useState<ViewType>('dashboard');
@@ -19,6 +24,9 @@ function App() {
   const [streamingTorrent, setStreamingTorrent] = useState<Torrent | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [isConnected, setIsConnected] = useState(true);
+  const [isAIAgentOpen, setIsAIAgentOpen] = useState(false);
+  const [autoPilot, setAutoPilot] = useState(false);
+  const [aiInsights, setAiInsights] = useState<AIInsight[]>([]);
 
   // Simulate progress updates
   useEffect(() => {
@@ -40,6 +48,22 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
+  // Generate AI insights periodically
+  useEffect(() => {
+    const updateInsights = () => {
+      const insights = generateAutoInsights(torrents, mockStats);
+      setAiInsights(insights);
+    };
+    updateInsights();
+    const interval = setInterval(updateInsights, 10000);
+    return () => clearInterval(interval);
+  }, [torrents]);
+
+  const handleAIAction = (action: AIAction) => {
+    // Handle AI actions - in a real app this would trigger actual operations
+    console.log('AI Action triggered:', action);
+  };
+
   const handleStream = (torrent: Torrent) => {
     setStreamingTorrent(torrent);
   };
@@ -52,6 +76,16 @@ function App() {
         return <TorrentList torrents={torrents} onStream={handleStream} />;
       case 'streaming':
         return <StreamingView torrents={torrents} onStream={handleStream} />;
+      case 'ai':
+        return (
+          <AIPanel
+            torrents={torrents}
+            stats={mockStats}
+            insights={aiInsights}
+            autoPilot={autoPilot}
+            onToggleAutoPilot={() => setAutoPilot(!autoPilot)}
+          />
+        );
       case 'search':
         return <SearchView />;
       case 'files':
@@ -167,6 +201,27 @@ function App() {
           <AddTorrentModal onClose={() => setShowAddModal(false)} />
         )}
       </AnimatePresence>
+
+      {/* AI Agent Chat */}
+      <AnimatePresence>
+        {isAIAgentOpen && (
+          <AIAgent
+            isOpen={isAIAgentOpen}
+            onClose={() => setIsAIAgentOpen(false)}
+            torrents={torrents}
+            stats={mockStats}
+            onAction={handleAIAction}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* AI Floating Button */}
+      <AIFloatingButton
+        onClick={() => setIsAIAgentOpen(true)}
+        isOpen={isAIAgentOpen}
+        torrents={torrents}
+        stats={mockStats}
+      />
     </div>
   );
 }

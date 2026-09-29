@@ -9,6 +9,7 @@ import {
   Zap,
   Wifi,
   WifiOff,
+  Brain,
 } from 'lucide-react';
 import { ViewType } from '../types';
 
@@ -22,6 +23,7 @@ const navItems: { id: ViewType; label: string; icon: React.ElementType }[] = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'torrents', label: 'Torrents', icon: Download },
   { id: 'streaming', label: 'Stream', icon: Play },
+  { id: 'ai', label: 'AI Agent', icon: Brain },
   { id: 'search', label: 'Search', icon: Search },
   { id: 'files', label: 'Files', icon: FolderOpen },
   { id: 'settings', label: 'Settings', icon: Settings },
