@@ -126,6 +126,84 @@ export default function SettingsView() {
         </motion.div>
       )}
 
+      {/* Infrastructure Quick Access */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700/50 overflow-hidden"
+      >
+        <div className="p-5 border-b border-gray-700/50">
+          <div className="flex items-center gap-2">
+            <SettingsIcon className="w-5 h-5 text-violet-400" />
+            <h3 className="text-lg font-semibold text-white">Infrastructure</h3>
+          </div>
+          <p className="text-xs text-gray-500 mt-1">Advanced server configuration and integrations</p>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 p-5">
+          <InfrastructureButton
+            icon="🔶"
+            title="VLC Plugin"
+            description="Advanced playback"
+            color="orange"
+            onClick={() => {
+              const event = new CustomEvent('openInfrastructure', { detail: 'vlc' });
+              window.dispatchEvent(event);
+            }}
+          />
+          <InfrastructureButton
+            icon="🔗"
+            title="Torrent Clients"
+            description="Connect external apps"
+            color="blue"
+            onClick={() => {
+              const event = new CustomEvent('openInfrastructure', { detail: 'clients' });
+              window.dispatchEvent(event);
+            }}
+          />
+          <InfrastructureButton
+            icon="⚡"
+            title="Speed Control"
+            description="Optimize transfers"
+            color="emerald"
+            onClick={() => {
+              const event = new CustomEvent('openInfrastructure', { detail: 'speed' });
+              window.dispatchEvent(event);
+            }}
+          />
+          <InfrastructureButton
+            icon="🌱"
+            title="Seeding"
+            description="Manage ratios"
+            color="cyan"
+            onClick={() => {
+              const event = new CustomEvent('openInfrastructure', { detail: 'seeding' });
+              window.dispatchEvent(event);
+            }}
+          />
+          <InfrastructureButton
+            icon="🔒"
+            title="Security"
+            description="Privacy & encryption"
+            color="red"
+            onClick={() => {
+              const event = new CustomEvent('openInfrastructure', { detail: 'security' });
+              window.dispatchEvent(event);
+            }}
+          />
+          <InfrastructureButton
+            icon="🛡️"
+            title="VPN"
+            description="Secure connection"
+            color="violet"
+            onClick={() => {
+              const event = new CustomEvent('openInfrastructure', { detail: 'vpn' });
+              window.dispatchEvent(event);
+            }}
+          />
+        </div>
+      </motion.div>
+
       {/* Connection Settings */}
       <SettingsSection icon={Globe} title="Connection" description="Network and connection settings">
         <SettingRow label="Listening Port" description="Port range for incoming connections">
@@ -343,5 +421,41 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
         className="absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm"
       />
     </button>
+  );
+}
+
+function InfrastructureButton({
+  icon,
+  title,
+  description,
+  color,
+  onClick,
+}: {
+  icon: string;
+  title: string;
+  description: string;
+  color: string;
+  onClick: () => void;
+}) {
+  const colorClasses: Record<string, string> = {
+    orange: 'from-orange-500/20 to-orange-500/5 border-orange-500/20 hover:border-orange-500/40',
+    blue: 'from-blue-500/20 to-blue-500/5 border-blue-500/20 hover:border-blue-500/40',
+    emerald: 'from-emerald-500/20 to-emerald-500/5 border-emerald-500/20 hover:border-emerald-500/40',
+    cyan: 'from-cyan-500/20 to-cyan-500/5 border-cyan-500/20 hover:border-cyan-500/40',
+    red: 'from-red-500/20 to-red-500/5 border-red-500/20 hover:border-red-500/40',
+    violet: 'from-violet-500/20 to-violet-500/5 border-violet-500/20 hover:border-violet-500/40',
+  };
+
+  return (
+    <motion.button
+      whileHover={{ scale: 1.02, y: -2 }}
+      whileTap={{ scale: 0.98 }}
+      onClick={onClick}
+      className={`p-4 rounded-xl bg-gradient-to-br ${colorClasses[color]} border text-left transition-all`}
+    >
+      <div className="text-2xl mb-2">{icon}</div>
+      <p className="text-sm font-medium text-white">{title}</p>
+      <p className="text-xs text-gray-500 mt-0.5">{description}</p>
+    </motion.button>
   );
 }

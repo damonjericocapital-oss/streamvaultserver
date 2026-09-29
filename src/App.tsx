@@ -21,6 +21,12 @@ import UserMenu from './components/UserMenu';
 import GroupTheater from './components/GroupTheater';
 import AgeVerification from './components/AgeVerification';
 import AdvancedPlayerSettings from './components/AdvancedPlayerSettings';
+import VLCIntegration from './components/VLCIntegration';
+import TorrentClientConnectors from './components/TorrentClientConnectors';
+import SpeedOptimizationPanel from './components/SpeedOptimizationPanel';
+import SeedingManagement from './components/SeedingManagement';
+import SecuritySettings from './components/SecuritySettings';
+import VPNConfiguration from './components/VPNConfiguration';
 import { UserProvider, useUser } from './context/UserContext';
 import { ViewType, Torrent } from './types';
 import { AIAction, AIInsight } from './types/ai';
@@ -33,6 +39,14 @@ import {
   DolbyConfig,
   TheaterRoom,
 } from './types/advanced';
+import {
+  VLCConfig,
+  TorrentClientConfig,
+  SpeedOptimization,
+  SeedingConfig,
+  SecurityConfig,
+  VPNConfig,
+} from './types/infrastructure';
 
 function App() {
   return (
@@ -89,6 +103,82 @@ function AppContent() {
     virtualizer: false,
   });
 
+  // Infrastructure features state
+  const [showVLC, setShowVLC] = useState(false);
+  const [vlcConfig, setVlcConfig] = useState<VLCConfig>({
+    enabled: false,
+    path: '',
+    useVLCForAll: false,
+    hardwareAcceleration: true,
+    networkCaching: 1000,
+    audioSync: 0,
+    subtitleSync: 0,
+    customArgs: [],
+  });
+
+  const [showTorrentClients, setShowTorrentClients] = useState(false);
+  const [torrentClients, setTorrentClients] = useState<TorrentClientConfig[]>([]);
+
+  const [showSpeedOptimization, setShowSpeedOptimization] = useState(false);
+  const [speedConfig, setSpeedConfig] = useState<SpeedOptimization>({
+    maxDownloadSpeed: 0,
+    maxUploadSpeed: 0,
+    maxConnections: 500,
+    maxConnectionsPerTorrent: 100,
+    maxUploadSlots: 50,
+    maxUploadSlotsPerTorrent: 10,
+    enableQueueing: true,
+    maxActiveDownloads: 5,
+    maxActiveUploads: 5,
+    schedulerEnabled: false,
+    schedulerRules: [],
+  });
+
+  const [showSeeding, setShowSeeding] = useState(false);
+  const [seedingConfig, setSeedingConfig] = useState<SeedingConfig>({
+    defaultRatio: 2.0,
+    defaultSeedTime: 1440,
+    actionOnComplete: 'pause',
+    enableSuperSeeding: false,
+    sequentialDownload: false,
+    firstLastPiecePriority: true,
+    autoAddTrackers: true,
+    trackerList: [],
+    shareRatioLimit: 0,
+    seedTimeLimit: 0,
+  });
+
+  const [showSecurity, setShowSecurity] = useState(false);
+  const [securityConfig, setSecurityConfig] = useState<SecurityConfig>({
+    encryption: 'prefer',
+    anonymousMode: false,
+    enableIPFilter: false,
+    blockedIPs: [],
+    enablePeerExchange: true,
+    enableDHT: true,
+    enableLPD: true,
+    enableUPnP: true,
+    enableNATPMP: false,
+    randomizePort: false,
+    portRange: '6881-6889',
+    enableRSSFeed: false,
+    secureConnections: true,
+  });
+
+  const [showVPN, setShowVPN] = useState(false);
+  const [vpnConfig, setVpnConfig] = useState<VPNConfig>({
+    enabled: false,
+    provider: 'custom',
+    protocol: 'wireguard',
+    killSwitch: true,
+    autoConnect: false,
+    bypassLocalNetwork: true,
+    dnsLeakProtection: true,
+    splitTunneling: false,
+    splitTunnelApps: [],
+    connected: false,
+  });
+
   // Simulate progress updates
   useEffect(() => {
     const interval = setInterval(() => {
@@ -107,6 +197,38 @@ function AppContent() {
       );
     }, 3000);
     return () => clearInterval(interval);
+  }, []);
+
+  // Handle infrastructure panel events
+  useEffect(() => {
+    const handleOpenInfrastructure = (event: CustomEvent<string>) => {
+      const panel = event.detail;
+      switch (panel) {
+        case 'vlc':
+          setShowVLC(true);
+          break;
+        case 'clients':
+          setShowTorrentClients(true);
+          break;
+        case 'speed':
+          setShowSpeedOptimization(true);
+          break;
+        case 'seeding':
+          setShowSeeding(true);
+          break;
+        case 'security':
+          setShowSecurity(true);
+          break;
+        case 'vpn':
+          setShowVPN(true);
+          break;
+      }
+    };
+
+    window.addEventListener('openInfrastructure', handleOpenInfrastructure as EventListener);
+    return () => {
+      window.removeEventListener('openInfrastructure', handleOpenInfrastructure as EventListener);
+    };
   }, []);
 
   // Generate AI insights periodically
@@ -357,6 +479,72 @@ function AppContent() {
             onLatencyChange={setLatencyConfig}
             onDolbyChange={setDolbyConfig}
             onClose={() => setShowAdvancedSettings(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* VLC Integration */}
+      <AnimatePresence>
+        {showVLC && (
+          <VLCIntegration
+            config={vlcConfig}
+            onConfigChange={setVlcConfig}
+            onClose={() => setShowVLC(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Torrent Client Connectors */}
+      <AnimatePresence>
+        {showTorrentClients && (
+          <TorrentClientConnectors
+            clients={torrentClients}
+            onClientsChange={setTorrentClients}
+            onClose={() => setShowTorrentClients(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Speed Optimization */}
+      <AnimatePresence>
+        {showSpeedOptimization && (
+          <SpeedOptimizationPanel
+            config={speedConfig}
+            onConfigChange={setSpeedConfig}
+            onClose={() => setShowSpeedOptimization(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Seeding Management */}
+      <AnimatePresence>
+        {showSeeding && (
+          <SeedingManagement
+            config={seedingConfig}
+            onConfigChange={setSeedingConfig}
+            onClose={() => setShowSeeding(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Security Settings */}
+      <AnimatePresence>
+        {showSecurity && (
+          <SecuritySettings
+            config={securityConfig}
+            onConfigChange={setSecurityConfig}
+            onClose={() => setShowSecurity(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* VPN Configuration */}
+      <AnimatePresence>
+        {showVPN && (
+          <VPNConfiguration
+            config={vpnConfig}
+            onConfigChange={setVpnConfig}
+            onClose={() => setShowVPN(false)}
           />
         )}
       </AnimatePresence>
