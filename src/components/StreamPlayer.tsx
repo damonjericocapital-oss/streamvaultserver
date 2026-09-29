@@ -16,6 +16,11 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { Torrent } from '../types';
+import { mediaLibrary } from '../data/mediaLibrary';
+
+function getMediaByTorrentId(torrentId: string) {
+  return mediaLibrary.find((m) => m.torrentId === torrentId);
+}
 
 interface StreamPlayerProps {
   torrent: Torrent | null;
@@ -32,6 +37,10 @@ export default function StreamPlayer({ torrent, onClose }: StreamPlayerProps) {
   if (!torrent) return null;
 
   const videoFile = torrent.files.find((f) => f.type === 'video' && f.streamable);
+  
+  // Get backdrop from media library if available
+  const mediaItem = getMediaByTorrentId(torrent.id);
+  const backdrop = mediaItem?.backdrop || torrent.thumbnail;
 
   return (
     <motion.div
@@ -78,25 +87,38 @@ export default function StreamPlayer({ torrent, onClose }: StreamPlayerProps) {
 
       {/* Video Area */}
       <div className="flex-1 flex items-center justify-center relative">
-        <div className="relative w-full h-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center">
+        <div className="relative w-full h-full bg-gray-900 flex items-center justify-center">
+          {/* Backdrop Image */}
+          {backdrop && (
+            <div className="absolute inset-0">
+              <img src={backdrop} alt="" className="w-full h-full object-cover opacity-40" />
+              <div className="absolute inset-0 bg-black/40" />
+            </div>
+          )}
+          
           {/* Simulated Video Content */}
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
               <motion.div
                 animate={{ scale: [1, 1.02, 1] }}
                 transition={{ duration: 4, repeat: Infinity }}
-                className="w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 border border-emerald-500/30 flex items-center justify-center"
+                className="w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-amber-500/20 to-orange-500/20 border border-amber-500/30 flex items-center justify-center"
               >
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
-                  className="w-24 h-24 rounded-full border-2 border-dashed border-emerald-500/30 flex items-center justify-center"
+                  className="w-24 h-24 rounded-full border-2 border-dashed border-amber-500/30 flex items-center justify-center"
                 >
-                  <Play className="w-10 h-10 text-emerald-400" />
+                  <Play className="w-10 h-10 text-amber-400" />
                 </motion.div>
               </motion.div>
-              <p className="mt-6 text-gray-400 text-sm">Streaming via P2P</p>
-              <p className="text-gray-500 text-xs mt-1">Buffer: 98% • Quality: 1080p</p>
+              {mediaItem && (
+                <>
+                  <h2 className="mt-6 text-2xl font-bold text-white">{mediaItem.title}</h2>
+                  <p className="text-gray-400 text-sm mt-1">{mediaItem.year} • {mediaItem.quality}</p>
+                </>
+              )}
+              <p className="mt-3 text-gray-500 text-xs">Streaming via P2P • Buffer: 98%</p>
             </div>
           </div>
 
@@ -133,7 +155,7 @@ export default function StreamPlayer({ torrent, onClose }: StreamPlayerProps) {
             }}
           >
             <motion.div
-              className="h-full bg-gradient-to-r from-emerald-400 to-cyan-400 rounded-full relative"
+              className="h-full bg-gradient-to-r from-amber-400 to-orange-400 rounded-full relative"
               style={{ width: `${progress}%` }}
             >
               <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white opacity-0 group-hover:opacity-100 transition-opacity shadow-lg" />
@@ -184,7 +206,7 @@ export default function StreamPlayer({ torrent, onClose }: StreamPlayerProps) {
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-400 mr-2">1080p • H.264</span>
+            <span className="text-xs text-gray-400 mr-2">{mediaItem?.quality || '1080p'} • H.264</span>
             <button className="p-2 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-colors">
               <Subtitles className="w-4 h-4" />
             </button>

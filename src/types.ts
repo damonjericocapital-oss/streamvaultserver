@@ -40,4 +40,18 @@ export interface ServerStats {
   memoryUsage: number;
 }
 
-export type ViewType = 'dashboard' | 'torrents' | 'streaming' | 'search' | 'settings' | 'files' | 'ai';
+export type ViewType =
+  | 'home'
+  | 'movies'
+  | 'shows'
+  | 'music'
+  | 'continue'
+  | 'favorites'
+  | 'recent'
+  | 'dashboard'
+  | 'torrents'
+  | 'streaming'
+  | 'search'
+  | 'settings'
+  | 'files'
+  | 'ai';

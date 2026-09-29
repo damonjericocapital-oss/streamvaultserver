@@ -89,9 +89,18 @@ input[type="checkbox"]:checked::after {
   font-weight: bold;
 }
 
+/* Hide scrollbar utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* Selection */
 ::selection {
-  background: rgba(16, 185, 129, 0.3);
+  background: rgba(245, 158, 11, 0.3);
   color: white;
 }
 

@@ -13,13 +13,16 @@ import FileBrowser from './components/FileBrowser';
 import AIAgent from './components/AIAgent';
 import AIFloatingButton from './components/AIFloatingButton';
 import AIPanel from './components/AIPanel';
+import MediaHome from './components/MediaHome';
+import MediaDetail from './components/MediaDetail';
 import { ViewType, Torrent } from './types';
 import { AIAction, AIInsight } from './types/ai';
+import { MediaItem } from './data/mediaLibrary';
 import { mockTorrents, mockStats } from './data/mockData';
 import { generateAutoInsights } from './engine/aiEngine';
 
 function App() {
-  const [currentView, setCurrentView] = useState<ViewType>('dashboard');
+  const [currentView, setCurrentView] = useState<ViewType>('home');
   const [torrents, setTorrents] = useState<Torrent[]>(mockTorrents);
   const [streamingTorrent, setStreamingTorrent] = useState<Torrent | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -27,6 +30,7 @@ function App() {
   const [isAIAgentOpen, setIsAIAgentOpen] = useState(false);
   const [autoPilot, setAutoPilot] = useState(false);
   const [aiInsights, setAiInsights] = useState<AIInsight[]>([]);
+  const [selectedMedia, setSelectedMedia] = useState<MediaItem | null>(null);
 
   // Simulate progress updates
   useEffect(() => {
@@ -64,12 +68,32 @@ function App() {
     console.log('AI Action triggered:', action);
   };
 
+  const handleMediaPlay = (item: MediaItem) => {
+    // Find corresponding torrent
+    const torrent = torrents.find((t) => t.id === item.torrentId);
+    if (torrent) {
+      setStreamingTorrent(torrent);
+    }
+  };
+
+  const handleMediaDetail = (item: MediaItem) => {
+    setSelectedMedia(item);
+  };
+
   const handleStream = (torrent: Torrent) => {
     setStreamingTorrent(torrent);
   };
 
   const renderView = () => {
     switch (currentView) {
+      case 'home':
+      case 'movies':
+      case 'shows':
+      case 'music':
+      case 'continue':
+      case 'favorites':
+      case 'recent':
+        return <MediaHome onPlay={handleMediaPlay} onDetail={handleMediaDetail} />;
       case 'dashboard':
         return <Dashboard stats={mockStats} torrents={torrents} />;
       case 'torrents':
@@ -93,7 +117,7 @@ function App() {
       case 'settings':
         return <SettingsView />;
       default:
-        return <Dashboard stats={mockStats} torrents={torrents} />;
+        return <MediaHome onPlay={handleMediaPlay} onDetail={handleMediaDetail} />;
     }
   };
 
@@ -101,9 +125,9 @@ function App() {
     <div className="min-h-screen bg-gray-950 text-white">
       {/* Background Effects */}
       <div className="fixed inset-0 z-0">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-violet-500/3 rounded-full blur-3xl" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-orange-500/5 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-amber-500/3 rounded-full blur-3xl" />
       </div>
 
       {/* Sidebar */}
@@ -114,16 +138,16 @@ function App() {
       />
 
       {/* Main Content */}
-      <main className="ml-64 relative z-10 min-h-screen">
+      <main className="ml-60 relative z-10 min-h-screen">
         {/* Top Bar */}
-        <header className="sticky top-0 z-40 bg-gray-950/80 backdrop-blur-xl border-b border-gray-800/50 px-8 py-4">
+        <header className="sticky top-0 z-40 bg-gradient-to-b from-gray-950 via-gray-950/95 to-transparent backdrop-blur-xl px-8 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 flex-1">
               <div className="relative">
                 <input
                   type="text"
-                  placeholder="Quick search torrents..."
-                  className="w-72 px-4 py-2 pl-10 rounded-xl bg-gray-800/50 border border-gray-700/50 text-sm text-white placeholder-gray-500 outline-none focus:border-emerald-500/50 transition-colors"
+                  placeholder="Search movies, shows, music..."
+                  className="w-80 px-4 py-2.5 pl-10 rounded-xl bg-gray-800/40 border border-gray-700/30 text-sm text-white placeholder-gray-500 outline-none focus:border-amber-500/50 focus:bg-gray-800/60 transition-all"
                 />
                 <svg
                   className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"
@@ -141,32 +165,23 @@ function App() {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              {/* Speed Indicator */}
-              <div className="flex items-center gap-4 px-4 py-2 rounded-xl bg-gray-800/50 border border-gray-700/50">
-                <div className="flex items-center gap-1.5">
-                  <svg className="w-3 h-3 text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L6.707 7.707a1 1 0 01-1.414 0z" />
-                  </svg>
-                  <span className="text-xs font-mono text-emerald-400">40.8 MB/s</span>
+              {/* User Avatar */}
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-gray-800/30 border border-gray-700/30">
+                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+                  <span className="text-[10px] font-bold text-white">SV</span>
                 </div>
-                <div className="w-px h-4 bg-gray-700" />
-                <div className="flex items-center gap-1.5">
-                  <svg className="w-3 h-3 text-cyan-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M14.707 12.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 14.586V3a1 1 0 112 0v11.586l2.293-2.293a1 1 0 011.414 0z" />
-                  </svg>
-                  <span className="text-xs font-mono text-cyan-400">6.76 MB/s</span>
-                </div>
+                <span className="text-xs text-gray-300">Admin</span>
               </div>
 
-              {/* Add Torrent Button */}
+              {/* Add Content Button */}
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setShowAddModal(true)}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 text-white text-sm font-medium shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 transition-shadow"
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-white text-sm font-medium shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30 transition-shadow"
               >
                 <Plus className="w-4 h-4" />
-                Add Torrent
+                Add Content
               </motion.button>
             </div>
           </div>
@@ -222,6 +237,17 @@ function App() {
         torrents={torrents}
         stats={mockStats}
       />
+
+      {/* Media Detail Modal */}
+      <AnimatePresence>
+        {selectedMedia && (
+          <MediaDetail
+            item={selectedMedia}
+            onClose={() => setSelectedMedia(null)}
+            onPlay={handleMediaPlay}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
