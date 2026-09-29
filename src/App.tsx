@@ -55,12 +55,21 @@ import {
   PaidContentConfig,
   AntiBufferingConfig,
 } from './types/ecosystem';
+import {
+  RTAConfig,
+  ContentModerationConfig,
+  ChildProtectionConfig,
+  PlatformConfig,
+} from './types/compliance';
 import MediaHunter from './components/MediaHunter';
 import DLNACasting from './components/DLNACasting';
 import AITroubleshooter from './components/AITroubleshooter';
 import ShufflePlayer from './components/ShufflePlayer';
 import PaidViewing from './components/PaidViewing';
 import AntiBufferingEngine from './components/AntiBufferingEngine';
+import SubscriptionManager from './components/SubscriptionManager';
+import ComplianceSettings from './components/ComplianceSettings';
+import PlatformSupport from './components/PlatformSupport';
 
 function App() {
   return (
@@ -259,6 +268,56 @@ function AppContent() {
     frameSync: true,
   });
 
+  // Subscription and compliance state
+  const [showSubscription, setShowSubscription] = useState(false);
+  const [currentPlan, setCurrentPlan] = useState('free');
+
+  const [showCompliance, setShowCompliance] = useState(false);
+  const [rtaConfig, setRtaConfig] = useState<RTAConfig>({
+    enabled: true,
+    ratingSystem: 'mpaa',
+    requireVerification: true,
+    blockUnderage: true,
+    adultContentWarning: true,
+    restrictedCategories: ['XXX', 'Adult'],
+  });
+
+  const [moderationConfig, setModerationConfig] = useState<ContentModerationConfig>({
+    enabled: true,
+    aiDetection: true,
+    illegalContentBlock: true,
+    csamDetection: true,
+    violenceDetection: true,
+    hateSpeechDetection: true,
+    reportSystem: true,
+    autoQuarantine: true,
+    confidenceThreshold: 85,
+  });
+
+  const [childProtectionConfig, setChildProtectionConfig] = useState<ChildProtectionConfig>({
+    enabled: true,
+    parentalControls: true,
+    kidProfiles: true,
+    contentFiltering: true,
+    timeLimits: false,
+    activityMonitoring: true,
+    blockChat: true,
+    blockPurchases: true,
+    requirePin: true,
+  });
+
+  const [showPlatform, setShowPlatform] = useState(false);
+  const [platformConfig, setPlatformConfig] = useState<PlatformConfig>({
+    ios: true,
+    macos: true,
+    android: true,
+    windows: true,
+    linux: true,
+    pwa: true,
+    offlineMode: true,
+    pushNotifications: true,
+  });
+
   // Simulate progress updates
   useEffect(() => {
     const interval = setInterval(() => {
@@ -319,6 +378,15 @@ function AppContent() {
           break;
         case 'anti-buffering':
           setShowAntiBuffering(true);
+          break;
+        case 'subscription':
+          setShowSubscription(true);
+          break;
+        case 'compliance':
+          setShowCompliance(true);
+          break;
+        case 'platform':
+          setShowPlatform(true);
           break;
       }
     };
@@ -710,6 +778,42 @@ function AppContent() {
             config={antiBufferingConfig}
             onConfigChange={setAntiBufferingConfig}
             onClose={() => setShowAntiBuffering(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Subscription Manager */}
+      <AnimatePresence>
+        {showSubscription && (
+          <SubscriptionManager
+            currentPlan={currentPlan}
+            onPlanChange={setCurrentPlan}
+            onClose={() => setShowSubscription(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Compliance Settings */}
+      <AnimatePresence>
+        {showCompliance && (
+          <ComplianceSettings
+            rtaConfig={rtaConfig}
+            moderationConfig={moderationConfig}
+            childProtectionConfig={childProtectionConfig}
+            onRTAChange={setRtaConfig}
+            onModerationChange={setModerationConfig}
+            onChildProtectionChange={setChildProtectionConfig}
+            onClose={() => setShowCompliance(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Platform Support */}
+      <AnimatePresence>
+        {showPlatform && (
+          <PlatformSupport
+            config={platformConfig}
+            onClose={() => setShowPlatform(false)}
           />
         )}
       </AnimatePresence>

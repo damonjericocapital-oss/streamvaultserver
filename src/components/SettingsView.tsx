@@ -261,6 +261,36 @@ export default function SettingsView() {
               window.dispatchEvent(event);
             }}
           />
+          <InfrastructureButton
+            icon="💎"
+            title="Subscription"
+            description="Monthly plans"
+            color="amber"
+            onClick={() => {
+              const event = new CustomEvent('openInfrastructure', { detail: 'subscription' });
+              window.dispatchEvent(event);
+            }}
+          />
+          <InfrastructureButton
+            icon="🛡️"
+            title="Compliance"
+            description="Safety & RTA"
+            color="red"
+            onClick={() => {
+              const event = new CustomEvent('openInfrastructure', { detail: 'compliance' });
+              window.dispatchEvent(event);
+            }}
+          />
+          <InfrastructureButton
+            icon="📱"
+            title="Platforms"
+            description="iOS, Android, Mac"
+            color="blue"
+            onClick={() => {
+              const event = new CustomEvent('openInfrastructure', { detail: 'platform' });
+              window.dispatchEvent(event);
+            }}
+          />
         </div>
       </motion.div>
 
