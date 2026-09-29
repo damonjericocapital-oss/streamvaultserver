@@ -55,6 +55,7 @@ import {
   PaidContentConfig,
   AntiBufferingConfig,
 } from './types/ecosystem';
+import { PaymentGatewayConfig, RevenueStats, Transaction } from './types/payment';
 import {
   RTAConfig,
   ContentModerationConfig,
@@ -70,6 +71,8 @@ import AntiBufferingEngine from './components/AntiBufferingEngine';
 import SubscriptionManager from './components/SubscriptionManager';
 import ComplianceSettings from './components/ComplianceSettings';
 import PlatformSupport from './components/PlatformSupport';
+import AdminPaymentConfig from './components/AdminPaymentConfig';
+import RevenueDashboard from './components/RevenueDashboard';
 
 function App() {
   return (
@@ -318,6 +321,77 @@ function AppContent() {
     pushNotifications: true,
   });
 
+  // Admin payment and revenue state
+  const [showAdminPayment, setShowAdminPayment] = useState(false);
+  const [paymentConfig, setPaymentConfig] = useState<PaymentGatewayConfig>({
+    stripe: null,
+    paypal: null,
+    crypto: null,
+    activeGateway: 'none',
+    testMode: true,
+    webhooks: [],
+  });
+
+  const [showRevenueDashboard, setShowRevenueDashboard] = useState(false);
+  const [revenueStats] = useState<RevenueStats>({
+    totalRevenue: 12450,
+    monthlyRecurringRevenue: 3240,
+    activeSubscribers: 147,
+    churnRate: 2.3,
+    averageRevenuePerUser: 22.04,
+    revenueByPlan: {
+      free: 0,
+      standard: 1188,
+      premium: 1798,
+      enterprise: 254,
+    },
+    revenueByMonth: [
+      { month: 'Jan', revenue: 2100 },
+      { month: 'Feb', revenue: 2450 },
+      { month: 'Mar', revenue: 2780 },
+      { month: 'Apr', revenue: 3120 },
+      { month: 'May', revenue: 3240 },
+    ],
+  });
+
+  const [transactions] = useState<Transaction[]>([
+    {
+      id: '1',
+      userId: 'user1',
+      userEmail: 'john@example.com',
+      planId: 'premium',
+      amount: 19.99,
+      currency: 'USD',
+      gateway: 'stripe',
+      status: 'completed',
+      createdAt: '2024-01-15T10:30:00Z',
+      gatewayTransactionId: 'pi_1234567890',
+    },
+    {
+      id: '2',
+      userId: 'user2',
+      userEmail: 'jane@example.com',
+      planId: 'standard',
+      amount: 9.99,
+      currency: 'USD',
+      gateway: 'paypal',
+      status: 'completed',
+      createdAt: '2024-01-14T15:20:00Z',
+      gatewayTransactionId: 'PAY-1234567890',
+    },
+    {
+      id: '3',
+      userId: 'user3',
+      userEmail: 'bob@example.com',
+      planId: 'premium',
+      amount: 19.99,
+      currency: 'USD',
+      gateway: 'stripe',
+      status: 'pending',
+      createdAt: '2024-01-14T09:15:00Z',
+    },
+  ]);
+
   // Simulate progress updates
   useEffect(() => {
     const interval = setInterval(() => {
@@ -387,6 +461,12 @@ function AppContent() {
           break;
         case 'platform':
           setShowPlatform(true);
+          break;
+        case 'admin-payment':
+          setShowAdminPayment(true);
+          break;
+        case 'revenue':
+          setShowRevenueDashboard(true);
           break;
       }
     };
@@ -814,6 +894,28 @@ function AppContent() {
           <PlatformSupport
             config={platformConfig}
             onClose={() => setShowPlatform(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Admin Payment Configuration */}
+      <AnimatePresence>
+        {showAdminPayment && (
+          <AdminPaymentConfig
+            config={paymentConfig}
+            onConfigChange={setPaymentConfig}
+            onClose={() => setShowAdminPayment(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Revenue Dashboard */}
+      <AnimatePresence>
+        {showRevenueDashboard && (
+          <RevenueDashboard
+            stats={revenueStats}
+            transactions={transactions}
+            onClose={() => setShowRevenueDashboard(false)}
           />
         )}
       </AnimatePresence>
