@@ -229,7 +229,11 @@ function AppContent() {
       {/* Stream Player Overlay */}
       <AnimatePresence>
         {streamingTorrent && (
-          <StreamPlayer torrent={streamingTorrent} onClose={() => setStreamingTorrent(null)} />
+          <StreamPlayer
+            title={streamingTorrent.name}
+            backdrop={streamingTorrent.thumbnail}
+            onClose={() => setStreamingTorrent(null)}
+          />
         )}
       </AnimatePresence>
 
