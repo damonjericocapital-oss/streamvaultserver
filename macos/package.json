@@ -1,0 +1,85 @@
+{
+  "name": "streamvault-desktop",
+  "version": "1.0.0",
+  "description": "StreamVault - Ultimate Streaming Server for macOS",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --mac",
+    "build:dmg": "electron-builder --mac dmg",
+    "build:zip": "electron-builder --mac zip",
+    "dev": "electron . --dev"
+  },
+  "build": {
+    "appId": "com.streamvault.app",
+    "productName": "StreamVault",
+    "copyright": "Copyright © 2024 StreamVault",
+    "mac": {
+      "category": "public.app-category.entertainment",
+      "icon": "build/icon.icns",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": ["x64", "arm64"]
+        },
+        {
+          "target": "zip",
+          "arch": ["x64", "arm64"]
+        }
+      ],
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
+      "minimumSystemVersion": "10.15",
+      "extendInfo": {
+        "NSMicrophoneUsageDescription": "StreamVault needs microphone access for voice chat features",
+        "NSCameraUsageDescription": "StreamVault needs camera access for video features",
+        "NSLocalNetworkUsageDescription": "StreamVault needs local network access to stream to devices on your network"
+      }
+    },
+    "dmg": {
+      "sign": false,
+      "contents": [
+        {
+          "x": 130,
+          "y": 220
+        },
+        {
+          "x": 410,
+          "y": 220,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ],
+      "window": {
+        "width": 540,
+        "height": 380
+      }
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "dist/**/*",
+      "build/**/*"
+    ],
+    "directories": {
+      "buildResources": "build",
+      "output": "release"
+    },
+    "publish": null
+  },
+  "author": {
+    "name": "StreamVault",
+    "email": "support@streamvault.app",
+    "url": "https://streamvault.app"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1"
+  },
+  "dependencies": {
+    "electron-store": "^8.1.0"
+  }
+}

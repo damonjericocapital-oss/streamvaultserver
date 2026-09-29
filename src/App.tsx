@@ -27,6 +27,14 @@ import SpeedOptimizationPanel from './components/SpeedOptimizationPanel';
 import SeedingManagement from './components/SeedingManagement';
 import SecuritySettings from './components/SecuritySettings';
 import VPNConfiguration from './components/VPNConfiguration';
+import AdminPaymentConfig from './components/AdminPaymentConfig';
+import RevenueDashboard from './components/RevenueDashboard';
+import NotificationsCenter from './components/NotificationsCenter';
+import ActivityFeed from './components/ActivityFeed';
+import QuickActionsPanel from './components/QuickActionsPanel';
+import FloatingActions from './components/FloatingActions';
+import KeyboardShortcuts from './components/KeyboardShortcuts';
+import LocalNetworkGuide from './components/LocalNetworkGuide';
 import { UserProvider, useUser } from './context/UserContext';
 import { ViewType, Torrent } from './types';
 import { AIAction, AIInsight } from './types/ai';
@@ -55,12 +63,14 @@ import {
   PaidContentConfig,
   AntiBufferingConfig,
 } from './types/ecosystem';
+import { PaymentGatewayConfig, RevenueStats, Transaction } from './types/payment';
 import {
   RTAConfig,
   ContentModerationConfig,
   ChildProtectionConfig,
   PlatformConfig,
 } from './types/compliance';
+import { Notification, ActivityItem, QuickAction } from './types/notifications';
 import MediaHunter from './components/MediaHunter';
 import DLNACasting from './components/DLNACasting';
 import AITroubleshooter from './components/AITroubleshooter';
@@ -318,6 +328,184 @@ function AppContent() {
     pushNotifications: true,
   });
 
+  // Admin payment and revenue state
+  const [showAdminPayment, setShowAdminPayment] = useState(false);
+  const [paymentConfig, setPaymentConfig] = useState<PaymentGatewayConfig>({
+    stripe: null,
+    paypal: null,
+    crypto: null,
+    activeGateway: 'none',
+    testMode: true,
+    webhooks: [],
+  });
+
+  const [showRevenueDashboard, setShowRevenueDashboard] = useState(false);
+  const [revenueStats] = useState<RevenueStats>({
+    totalRevenue: 12450,
+    monthlyRecurringRevenue: 3240,
+    activeSubscribers: 147,
+    churnRate: 2.3,
+    averageRevenuePerUser: 22.04,
+    revenueByPlan: {
+      free: 0,
+      standard: 1188,
+      premium: 1798,
+      enterprise: 254,
+    },
+    revenueByMonth: [
+      { month: 'Jan', revenue: 2100 },
+      { month: 'Feb', revenue: 2450 },
+      { month: 'Mar', revenue: 2780 },
+      { month: 'Apr', revenue: 3120 },
+      { month: 'May', revenue: 3240 },
+    ],
+  });
+
+  const [transactions] = useState<Transaction[]>([
+    {
+      id: '1',
+      userId: 'user1',
+      userEmail: 'john@example.com',
+      planId: 'premium',
+      amount: 19.99,
+      currency: 'USD',
+      gateway: 'stripe',
+      status: 'completed',
+      createdAt: '2024-01-15T10:30:00Z',
+      gatewayTransactionId: 'pi_1234567890',
+    },
+    {
+      id: '2',
+      userId: 'user2',
+      userEmail: 'jane@example.com',
+      planId: 'standard',
+      amount: 9.99,
+      currency: 'USD',
+      gateway: 'paypal',
+      status: 'completed',
+      createdAt: '2024-01-14T15:20:00Z',
+      gatewayTransactionId: 'PAY-1234567890',
+    },
+    {
+      id: '3',
+      userId: 'user3',
+      userEmail: 'bob@example.com',
+      planId: 'premium',
+      amount: 19.99,
+      currency: 'USD',
+      gateway: 'stripe',
+      status: 'pending',
+      createdAt: '2024-01-14T09:15:00Z',
+    },
+  ]);
+
+  // Notifications and activity state
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState<Notification[]>([
+    {
+      id: '1',
+      type: 'download',
+      title: 'Download Complete',
+      message: 'Big Buck Bunny has finished downloading',
+      timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
+      read: false,
+      priority: 'medium',
+      icon: '⬇️',
+    },
+    {
+      id: '2',
+      type: 'ai',
+      title: 'AI Insight',
+      message: 'Your server health score improved by 5%',
+      timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
+      read: false,
+      priority: 'low',
+      icon: '🧠',
+    },
+    {
+      id: '3',
+      type: 'system',
+      title: 'Update Available',
+      message: 'StreamVault v2.1 is ready to install',
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
+      read: true,
+      priority: 'high',
+      icon: '🔄',
+    },
+  ]);
+
+  const [showActivity, setShowActivity] = useState(false);
+  const [activities] = useState<ActivityItem[]>([
+    {
+      id: '1',
+      type: 'download_complete',
+      title: 'Download Complete',
+      description: 'Big Buck Bunny (2008) finished downloading',
+      timestamp: new Date(Date.now() - 1000 * 60 * 5).toISOString(),
+    },
+    {
+      id: '2',
+      type: 'stream_start',
+      title: 'Started Streaming',
+      description: 'User started watching Sintel',
+      timestamp: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
+      user: 'John',
+    },
+    {
+      id: '3',
+      type: 'ai_action',
+      title: 'AI Optimization',
+      description: 'Auto-optimized download speeds',
+      timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
+    },
+    {
+      id: '4',
+      type: 'user_login',
+      title: 'User Login',
+      description: 'Jane logged in from new device',
+      timestamp: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
+      user: 'Jane',
+    },
+  ]);
+
+  const [showQuickActions, setShowQuickActions] = useState(false);
+  const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
+
+  // Notification handlers
+  const handleMarkNotificationAsRead = (id: string) => {
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
+    );
+  };
+
+  const handleMarkAllNotificationsAsRead = () => {
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+  };
+
+  const handleDeleteNotification = (id: string) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+  };
+
+  const handleClearAllNotifications = () => {
+    setNotifications([]);
+  };
+
+  const handleQuickAction = (action: QuickAction) => {
+    console.log('Quick action:', action);
+    // Add notification for action
+    const newNotification: Notification = {
+      id: Date.now().toString(),
+      type: 'system',
+      title: 'Action Executed',
+      message: `${action.label} completed successfully`,
+      timestamp: new Date().toISOString(),
+      read: false,
+      priority: 'low',
+      icon: action.icon,
+    };
+    setNotifications((prev) => [newNotification, ...prev]);
+  };
+
   // Simulate progress updates
   useEffect(() => {
     const interval = setInterval(() => {
@@ -387,6 +575,12 @@ function AppContent() {
           break;
         case 'platform':
           setShowPlatform(true);
+          break;
+        case 'admin-payment':
+          setShowAdminPayment(true);
+          break;
+        case 'revenue':
+          setShowRevenueDashboard(true);
           break;
       }
     };
@@ -817,6 +1011,76 @@ function AppContent() {
           />
         )}
       </AnimatePresence>
+
+      {/* Admin Payment Configuration */}
+      <AnimatePresence>
+        {showAdminPayment && (
+          <AdminPaymentConfig
+            config={paymentConfig}
+            onConfigChange={setPaymentConfig}
+            onClose={() => setShowAdminPayment(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Revenue Dashboard */}
+      <AnimatePresence>
+        {showRevenueDashboard && (
+          <RevenueDashboard
+            stats={revenueStats}
+            transactions={transactions}
+            onClose={() => setShowRevenueDashboard(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Notifications Center */}
+      <AnimatePresence>
+        {showNotifications && (
+          <NotificationsCenter
+            notifications={notifications}
+            onMarkAsRead={handleMarkNotificationAsRead}
+            onMarkAllAsRead={handleMarkAllNotificationsAsRead}
+            onDelete={handleDeleteNotification}
+            onClearAll={handleClearAllNotifications}
+            onClose={() => setShowNotifications(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Activity Feed */}
+      <AnimatePresence>
+        {showActivity && (
+          <ActivityFeed
+            activities={activities}
+            onClose={() => setShowActivity(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Quick Actions Panel */}
+      <AnimatePresence>
+        {showQuickActions && (
+          <QuickActionsPanel
+            onAction={handleQuickAction}
+            onClose={() => setShowQuickActions(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Floating Actions */}
+      <FloatingActions
+        notifications={notifications}
+        onOpenNotifications={() => setShowNotifications(true)}
+        onOpenActivity={() => setShowActivity(true)}
+        onOpenQuickActions={() => setShowQuickActions(true)}
+      />
+
+      {/* Keyboard Shortcuts */}
+      <KeyboardShortcuts
+        isOpen={showKeyboardShortcuts}
+        onClose={() => setShowKeyboardShortcuts(false)}
+      />
     </div>
   );
 }

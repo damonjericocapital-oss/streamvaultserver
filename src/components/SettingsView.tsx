@@ -291,6 +291,26 @@ export default function SettingsView() {
               window.dispatchEvent(event);
             }}
           />
+          <InfrastructureButton
+            icon="💳"
+            title="Payment Config"
+            description="Admin gateway setup"
+            color="emerald"
+            onClick={() => {
+              const event = new CustomEvent('openInfrastructure', { detail: 'admin-payment' });
+              window.dispatchEvent(event);
+            }}
+          />
+          <InfrastructureButton
+            icon="📊"
+            title="Revenue"
+            description="Earnings dashboard"
+            color="purple"
+            onClick={() => {
+              const event = new CustomEvent('openInfrastructure', { detail: 'revenue' });
+              window.dispatchEvent(event);
+            }}
+          />
         </div>
       </motion.div>
 
@@ -537,6 +557,7 @@ function InfrastructureButton({
     purple: 'from-purple-500/20 to-purple-500/5 border-purple-500/20 hover:border-purple-500/40',
     pink: 'from-pink-500/20 to-pink-500/5 border-pink-500/20 hover:border-pink-500/40',
     amber: 'from-amber-500/20 to-amber-500/5 border-amber-500/20 hover:border-amber-500/40',
+    teal: 'from-teal-500/20 to-teal-500/5 border-teal-500/20 hover:border-teal-500/40',
   };
 
   return (
