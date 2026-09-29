@@ -34,6 +34,7 @@ import ActivityFeed from './components/ActivityFeed';
 import QuickActionsPanel from './components/QuickActionsPanel';
 import FloatingActions from './components/FloatingActions';
 import KeyboardShortcuts from './components/KeyboardShortcuts';
+import LocalNetworkGuide from './components/LocalNetworkGuide';
 import { UserProvider, useUser } from './context/UserContext';
 import { ViewType, Torrent } from './types';
 import { AIAction, AIInsight } from './types/ai';
