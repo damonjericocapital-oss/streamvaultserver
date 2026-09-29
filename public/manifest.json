@@ -1,0 +1,76 @@
+{
+  "name": "StreamVault - Smart Media Server",
+  "short_name": "StreamVault",
+  "description": "Ultimate streaming torrent server with AI-powered features",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#030712",
+  "theme_color": "#f59e0b",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["entertainment", "media"],
+  "screenshots": [
+    {
+      "src": "/screenshot1.png",
+      "sizes": "1280x720",
+      "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Continue Watching",
+      "short_name": "Continue",
+      "description": "Resume your last watched content",
+      "url": "/continue",
+      "icons": [{ "src": "/continue-icon.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Search",
+      "short_name": "Search",
+      "description": "Search for media",
+      "url": "/search",
+      "icons": [{ "src": "/search-icon.png", "sizes": "192x192" }]
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "application/x-www-form-urlencoded",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+streamvault",
+      "url": "/handle?data=%s"
+    }
+  ],
+  "prefer_related_applications": false,
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=com.streamvault.app",
+      "id": "com.streamvault.app"
+    },
+    {
+      "platform": "itunes",
+      "url": "https://apps.apple.com/app/streamvault/id123456789"
+    }
+  ]
+}
